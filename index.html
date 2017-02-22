@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Memoize Function</title>
+
+    <style>
+      body {
+        margin: auto;
+        text-align: center;
+        font-family: sans-serif;
+      }
+
+      .example {
+        width: 80%;
+      }
+
+      img {
+        float: right;
+        max-width: 20%;
+      }
+
+      .source {
+        float: right;
+        font-style: italic;
+        font-size: 0.25em;
+      }
+
+      .code {
+        text-align: left;
+        margin-left: 1em;
+        background-color: #D3D3D3;
+        line-height: 1.2em;
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <img src="img/memoize.png" alt="memoize graphic">
+      <h1> Memoizing Functions</h1>
+      <p>Memoization is an optimization technique where function calls
+        are cached so that the result can be immediately returned
+        the next time the function is called with the same arguments.
+        The results are stored in a key/value map, so they can be returned
+        from the cache, if present, instead of needing to call the function.</p>
+
+      <p>This is a great tool for functions that are called with the same inputs
+        repeatedly and are expensive to run.</p>
+      <a href="https://spin.atomicobject.com/2011/10/27/generic-memoization-in-c/"
+        class="source" target="_blank">image source</a>
+
+    </header>
+
+    <main>
+      <p> Here is a basic function which turns a function into a memoized version of
+        itself: </p>
+      <section class="code example">
+        <pre><code>
+          function memoize(myFunction) {
+            // Check to make sure myFunction is a function. Otherwise, just return it.
+            if (myFunction instanceof Function) {
+              // Create the cache for myFunction.
+              var cache = {};
+
+              /* Create the function which is returned. This function will either return
+               * the value of the cache at x (cache[x]) if x exists as a key in the cache,
+               * or will call myFunction with x as the parameter and store the result
+               * in the cache for future use.
+               */
+              return function(x) {
+                if (x in cache) {
+                  return cache[x];
+                }
+                cache[x] = myFunction(x);
+                return cache[x];
+              }
+            } else {
+              return myFunction; //This just returns myFunction if myFunction isn't really a function.
+            }
+          }
+        </code></pre>
+      </section>
+    </main>
+
+    <section class="example">
+      <p>Enter a number and click the button below to run the simple function below which squares the inputted number.<br>
+        If the number inputted is not in the cache, "Calculating!" will appear.
+        Otherwise, only the result will appear.</p>
+      <input id="squareInput" type="number"></input>
+      <button id="squareButton" onclick="runSquare()">Square</button>
+      <h2 id="answerDisplay"></h2>
+      <section class="code"><pre><code>
+        function square(myNum) {
+          var answerDisplay = document.getElementById("answerDisplay");
+          answerDisplay.textContent += " Calculating!";
+          return myNum * myNum;
+        }
+      </code></pre></section>
+    </section>
+
+    <section class="example">
+      <p>Enter a number and click the button below to run a recursive function which calculates
+        the factorial of the inputted number. Once again, "Calculating!" will only
+        be displayed when the input is not in the cache and the factorial function must be called.</p>
+      <input id="factorialInput" type="number"></input>
+      <button onclick="runFactorial()">Get Factorial</button>
+      <h2 id="answerDisplay2"></h2>
+      <section class="code">
+        <pre><code>
+          function factorial(myNum) {
+            var answerDisplay2 = document.getElementById("answerDisplay2");
+            answerDisplay2.textContent += " Calculating!";
+            if (myNum === 1) {
+              return 1;
+            }
+            return myNum * factorial(myNum - 1);
+          }
+        </pre></code>
+      </section>
+    </section>
+
+    <script>
+      function memoize(myFunction) {
+        // check to make sure myFunction is a function. Otherwise, just return it.
+        if (myFunction instanceof Function) {
+          // Create the cache for myFunction.
+          var cache = {};
+
+          /* Create the function which is returned. This function will either return
+           * the value of the cache at x (cache[x]) if x exists as a key in the cache,
+           * or will call myFunction with x as the parameter and store the result
+           * in the cache for future use.
+           */
+          return function(x) {
+            if (x in cache) {
+              return cache[x];
+            }
+            cache[x] = myFunction(x);
+            return cache[x];
+          }
+        } else {
+        return myFunction;
+        }
+      }
+
+      function square(myNum) {
+        var answerDisplay = document.getElementById("answerDisplay");
+        answerDisplay.textContent += " Calculating!";
+        return myNum * myNum;
+      }
+
+      var memoizedSquare = memoize(square);
+
+      function factorial(myNum) {
+        var answerDisplay2 = document.getElementById("answerDisplay2");
+        answerDisplay2.textContent += " Calculating!";
+        if (myNum === 1) {
+          return 1;
+        }
+        return myNum * factorial(myNum - 1);
+      }
+
+      var memoizedFactorial = memoize(factorial);
+
+      function runSquare() {
+        var myNum = document.getElementById("squareInput").value;
+        var answer = memoizedSquare(myNum);
+        var answerDisplay = document.getElementById("answerDisplay");
+        answerDisplay.textContent += (" " + answer);
+      }
+
+      function runFactorial() {
+        var myNum = document.getElementById("factorialInput").value;
+        var answer = memoizedFactorial(myNum);
+        var answerDisplay2 = document.getElementById("answerDisplay2");
+        answerDisplay2.textContent += (" " + answer);
+      }
+    </script>
+  </body>
+  </html>
